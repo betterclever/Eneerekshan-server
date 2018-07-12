@@ -3,6 +3,7 @@ const UserModel = require("../Models/User");
 const InspectionModel = require("../Models/InspectionModel");
 const _ = require("lodash");
 
+// Create a New User
 router.post("/createUser", (req, res) => {
   const newUser = _.pick(req.body, [
     "name",
@@ -24,6 +25,7 @@ router.post("/createUser", (req, res) => {
     });
 });
 
+// Create a New Inspection
 router.post("/inspections/new", (req, res) => {
   const newInspection = _.pick(req.body, [
     "assignees",
@@ -49,6 +51,37 @@ router.post("/inspections/new", (req, res) => {
     });
 });
 
+// Patch an Inspection
+router.patch("/inspections/:id", (req, res) => {
+  InspectionModel.findById(req.params.id, (err, inspection) => {
+    if (err) {
+      res.status(404).send(err);
+    } else {
+      const updatedInspection = _.pick(req.body, [
+        "assignees",
+        "mediaRef",
+        "reportID",
+        "Status",
+        "submittedBy",
+        "timeStamp",
+        "title",
+        "urgent"
+      ]);
+
+      inspection.set(updatedInspection);
+      inspection
+        .save()
+        .then(data => {
+          res.status(200).send(data);
+        })
+        .catch(err => {
+          res.status(404).send(err);
+        });
+    }
+  });
+});
+
+// Get an Inspections
 router.get("/inspections/:id", (req, res) => {
   InspectionModel.findById(req.params.id)
     .then(data => {
