@@ -1,4 +1,5 @@
 const router = require("express").Router();
+const mongoose = require("../Models/config");
 const UserModel = require("../Models/User");
 const InspectionModel = require("../Models/InspectionModel");
 const { Locations } = require("../Constants/Location");
@@ -132,6 +133,76 @@ router.get("/users/:location/:department/designations", (req, res) => {
         });
 
         res.status(200).send(Array.from(listofDesignations));
+      }
+    }
+  );
+});
+
+// Update User FCMToken
+router.patch("/users/:id", (req, res) => {
+  UserModel.findById(req.params.id, (err, docs) => {
+    if (err) {
+      res.send(404).send(err);
+    } else {
+      const newData = _.pick(req.body, ["FCMToken"]);
+      docs.set(newData);
+      docs
+        .save()
+        .then(data => res.status(200).send(data))
+        .catch(err => res.status(400).send(err));
+    }
+  });
+});
+
+// New File
+router.post("/files/new", (req, res) => {
+  if (!req.files) {
+    res.status(400).send("No File Uploaded");
+  }
+
+  let file = req.files.file;
+  const extension = file.name.split(".")[1];
+  file.name = "upload_" + Date.now() + "." + extension;
+
+  if (file.mimetype.includes("image") || file.mimetype.includes("video")) {
+    file.mv(__dirname + "/../Uploaded_Files/" + file.name, err => {
+      if (err) return res.status(500).send(err);
+      res.send(file.name);
+    });
+  } else {
+    res.send("Only Images and Videos Can be Uploaded");
+  }
+});
+
+// Get Inspections Submitted by Particular Users
+router.get("/inspections/submittedBy/:userid", (req, res) => {
+  InspectionModel.find(
+    {
+      submittedBy: {
+        _id: req.params.userid
+      }
+    },
+    (err, docs) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        console.log(docs);
+        res.status(200).send(docs);
+      }
+    }
+  );
+});
+
+// Get Inspections assigned to particular Users
+router.get("/inspections/markedTo/:userid", (req, res) => {
+  InspectionModel.find(
+    { assignees: { $in: [req.params.userid] } },
+    (err, docs) => {
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        console.log(docs);
+        res.status(200).send(docs);
       }
     }
   );

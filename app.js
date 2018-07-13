@@ -1,4 +1,5 @@
 const express = require("express");
+const fileUpload = require("express-fileupload");
 const bodyParser = require("body-parser");
 const router = require("./Routes/routes");
 
@@ -6,6 +7,9 @@ const app = express();
 
 // Body Parser middleware
 app.use(bodyParser.json());
+
+// File-Upload Middleware
+app.use(fileUpload());
 
 // API Router middleware
 app.use("/", router);

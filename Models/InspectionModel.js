@@ -3,7 +3,7 @@ const UserSchema = mongoose.model("User").schema;
 const Schema = mongoose.Schema;
 
 const InspectionModel = Schema({
-  assignees: [UserSchema],
+  assignees: [Schema.Types.ObjectId],
   mediaRef: {
     type: String
   },
@@ -14,7 +14,7 @@ const InspectionModel = Schema({
     type: String,
     enum: ["seen", "unseen", "compiled", "markedCompiled"]
   },
-  submittedBy: UserSchema,
+  submittedBy: Schema.Types.ObjectId,
   timeStamp: {
     type: Number
   },
