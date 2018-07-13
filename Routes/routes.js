@@ -1,10 +1,12 @@
 const router = require("express").Router();
 const UserModel = require("../Models/User");
 const InspectionModel = require("../Models/InspectionModel");
+const { Locations } = require("../Constants/Location");
+
 const _ = require("lodash");
 
 // Create a New User
-router.post("/createUser", (req, res) => {
+router.post("/user/new", (req, res) => {
   const newUser = _.pick(req.body, [
     "name",
     "phone",
@@ -26,7 +28,7 @@ router.post("/createUser", (req, res) => {
 });
 
 // Create a New Inspection
-router.post("/inspections/new", (req, res) => {
+router.post("/inspection/new", (req, res) => {
   const newInspection = _.pick(req.body, [
     "assignees",
     "mediaRef",
@@ -52,7 +54,7 @@ router.post("/inspections/new", (req, res) => {
 });
 
 // Patch an Inspection
-router.patch("/inspections/:id", (req, res) => {
+router.patch("/inspection/:id", (req, res) => {
   InspectionModel.findById(req.params.id, (err, inspection) => {
     if (err) {
       res.status(404).send(err);
@@ -82,7 +84,7 @@ router.patch("/inspections/:id", (req, res) => {
 });
 
 // Get an Inspections
-router.get("/inspections/:id", (req, res) => {
+router.get("/inspection/:id", (req, res) => {
   InspectionModel.findById(req.params.id)
     .then(data => {
       res.status(200).send(data);
@@ -90,6 +92,27 @@ router.get("/inspections/:id", (req, res) => {
     .catch(err => {
       res.status(404).send(err);
     });
+});
+
+// Get all Locations
+router.get("/users/locations", (req, res) => {
+  res.status(200).send(Locations);
+});
+
+// Get All Departments from Particular Location
+router.get("/users/:location/departments", (req, res) => {
+  UserModel.find({ location: req.params.location }, (err, docs) => {
+    if (err) {
+      res.status(400).send(err);
+    } else {
+      let listOfDepartments = new Set();
+      docs.forEach(doc => {
+        listOfDepartments.add(doc.department);
+      });
+      // console.log(listOfDepartments);
+      res.status(200).send(Array.from(listOfDepartments));
+    }
+  });
 });
 
 module.exports = router;
