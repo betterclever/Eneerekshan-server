@@ -115,4 +115,26 @@ router.get("/users/:location/departments", (req, res) => {
   });
 });
 
+// Get Designations from particular location and departments
+router.get("/users/:location/:department/designations", (req, res) => {
+  UserModel.find(
+    {
+      location: req.params.location,
+      department: req.params.department
+    },
+    (err, docs) => {
+      if (err) {
+        res.status(400).send(err);
+      } else {
+        let listofDesignations = new Set();
+        docs.forEach(doc => {
+          listofDesignations.add(doc.designation);
+        });
+
+        res.status(200).send(Array.from(listofDesignations));
+      }
+    }
+  );
+});
+
 module.exports = router;
