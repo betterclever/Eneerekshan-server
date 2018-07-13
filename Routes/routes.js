@@ -28,6 +28,28 @@ router.post("/user/new", (req, res) => {
     });
 });
 
+// Get all Users
+router.get("/users", (req, res) => {
+  UserModel.find({}, (err, users) => {
+    if (err) {
+      res.send(err);
+    } else {
+      res.status(200).send(users);
+    }
+  });
+});
+
+// Get User with Particular ID
+router.get("/users/:id", (req, res) => {
+  UserModel.findById(req.params.id)
+    .then(data => {
+      res.status(200).send(data);
+    })
+    .catch(err => {
+      res.status(404).send(err);
+    });
+});
+
 // Create a New Inspection
 router.post("/inspection/new", (req, res) => {
   const newInspection = _.pick(req.body, [
