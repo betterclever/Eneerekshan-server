@@ -74,7 +74,7 @@ router.post("/inspection/new", (req, res) => {
   const assignees = req.body.assignees;
 
   let assigneeList = new Set();
-  assignees.map(async assignee => {
+  let arrayOfPromises = assignees.map(async assignee => {
     let res = await UserModel.find({
       location: assignee.location,
       department: assignee.department,
@@ -87,21 +87,26 @@ router.post("/inspection/new", (req, res) => {
     });
   });
 
-  // res.send(Array.from(assigneeList));
-  console.log(Array.from(assigneeList));
-  _.assign(newInspection, {
-    assignees: Array.from(assigneeList)
-  });
+  let promiseOfArray = Promises.all(arrayOfPromises);
 
-  const inspection = new InspectionModel(newInspection);
-  inspection
-    .save()
-    .then(data => {
-      return res.status(200).send(data);
-    })
-    .catch(err => {
-      return res.send(err);
-    });
+  promiseOfArray.then(ignored => {
+      // res.send(Array.from(assigneeList));
+      console.log(Array.from(assigneeList));
+      _.assign(newInspection, {
+          assignees: Array.from(assigneeList)
+      });
+
+     const inspection = new InspectionModel(newInspection);
+     inspection
+        .save()
+        .then(data => {
+          return res.status(200).send(data);
+        })
+        .catch(err => {
+          return res.send(err);
+        });
+    }
+ )
 });
 
 // Patch an Inspection
