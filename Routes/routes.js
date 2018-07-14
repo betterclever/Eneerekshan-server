@@ -87,26 +87,25 @@ router.post("/inspection/new", (req, res) => {
     });
   });
 
-  let promiseOfArray = Promises.all(arrayOfPromises);
+  let promiseOfArray = Promise.all(arrayOfPromises);
 
   promiseOfArray.then(ignored => {
-      // res.send(Array.from(assigneeList));
-      console.log(Array.from(assigneeList));
-      _.assign(newInspection, {
-          assignees: Array.from(assigneeList)
-      });
+    // res.send(Array.from(assigneeList));
+    console.log(Array.from(assigneeList));
+    _.assign(newInspection, {
+      assignees: Array.from(assigneeList)
+    });
 
-     const inspection = new InspectionModel(newInspection);
-     inspection
-        .save()
-        .then(data => {
-          return res.status(200).send(data);
-        })
-        .catch(err => {
-          return res.send(err);
-        });
-    }
- )
+    const inspection = new InspectionModel(newInspection);
+    inspection
+      .save()
+      .then(data => {
+        return res.status(200).send(data);
+      })
+      .catch(err => {
+        return res.send(err);
+      });
+  });
 });
 
 // Patch an Inspection
