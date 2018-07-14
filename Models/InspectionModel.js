@@ -1,5 +1,5 @@
 const mongoose = require("./config");
-const UserSchema = mongoose.model("User").schema;
+// const AssigneeSchema = mongoose.model("AssigneeModel").schema;
 const Schema = mongoose.Schema;
 
 const InspectionModel = Schema({
@@ -12,11 +12,13 @@ const InspectionModel = Schema({
   },
   Status: {
     type: String,
-    enum: ["seen", "unseen", "compiled", "markedCompiled"]
+    enum: ["seen", "unseen", "compiled", "markedCompiled"],
+    default: "unseen"
   },
   submittedBy: Schema.Types.ObjectId,
   timeStamp: {
-    type: Number
+    type: Number,
+    default: new Date().valueOf()
   },
   title: {
     type: String

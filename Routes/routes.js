@@ -28,6 +28,17 @@ router.post("/user/new", (req, res) => {
     });
 });
 
+// Get a user using phone Number
+router.get("/user/:phone", (req, res) => {
+  UserModel.find({ phone: req.params.phone }, (err, docs) => {
+    if (err) {
+      res.status(404).send(err);
+    } else {
+      res.status(200).send(docs);
+    }
+  });
+});
+
 // Get all Users
 router.get("/users", (req, res) => {
   UserModel.find({}, (err, users) => {
@@ -53,26 +64,43 @@ router.get("/users/:id", (req, res) => {
 // Create a New Inspection
 router.post("/inspection/new", (req, res) => {
   const newInspection = _.pick(req.body, [
-    "assignees",
     "mediaRef",
     "reportID",
-    "Status",
     "submittedBy",
-    "timeStamp",
     "title",
     "urgent"
   ]);
+
+  const assignees = req.body.assignees;
+
+  let assigneeList = new Set();
+  assignees.map(async assignee => {
+    let res = await UserModel.find({
+      location: assignee.location,
+      department: assignee.department,
+      designation: assignee.designation
+    });
+
+    res.map(doc => {
+      assigneeList.add(doc._id);
+      console.log(doc._id);
+    });
+  });
+
+  // res.send(Array.from(assigneeList));
+  console.log(Array.from(assigneeList));
+  _.assign(newInspection, {
+    assignees: Array.from(assigneeList)
+  });
 
   const inspection = new InspectionModel(newInspection);
   inspection
     .save()
     .then(data => {
-      console.log(data);
-      res.status(200).send(data);
+      return res.status(200).send(data);
     })
     .catch(err => {
-      console.log(err);
-      res.send(err);
+      return res.send(err);
     });
 });
 
