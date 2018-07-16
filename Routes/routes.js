@@ -155,7 +155,7 @@ router.get("/inspection/:id", (req, res) => {
 });
 
 // Get all Locations
-router.get("/users/locations", (req, res) => {
+router.get("/users/find/locations", (req, res) => {
   res.status(200).send(Locations);
 });
 
