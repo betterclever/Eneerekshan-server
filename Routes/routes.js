@@ -2,6 +2,7 @@ const router = require("express").Router();
 const UserModel = require("../Models/User");
 const InspectionModel = require("../Models/InspectionModel");
 const { Locations } = require("../Constants/Location");
+const path = require("path");
 
 const _ = require("lodash");
 
@@ -226,7 +227,10 @@ router.post("/files/new", (req, res) => {
   if (file.mimetype.includes("image") || file.mimetype.includes("video")) {
     file.mv(__dirname + "/../Uploaded_Files/" + file.name, err => {
       if (err) return res.status(500).send(err);
-      res.send(file.name);
+      res.send({
+        type: file.mimetype,
+        storageRef: file.name
+      });
     });
   } else {
     res.send("Only Images and Videos Can be Uploaded");
@@ -265,6 +269,13 @@ router.get("/inspections/markedTo/:userid", (req, res) => {
       }
     }
   );
+});
+
+router.get("/files/:filename", (req, res) => {
+  const filename = req.params.filename;
+
+  console.log(__dirname + "/../Uploaded_Files/" + filename);
+  res.sendfile(path.resolve("Uploaded_Files/" + filename));
 });
 
 module.exports = router;
