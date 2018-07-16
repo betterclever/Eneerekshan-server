@@ -1,11 +1,13 @@
 const mongoose = require("./config");
+const monoogsePaginate = require("mongoose-paginate");
 
 const Schema = mongoose.Schema;
 
 const User = new Schema({
   name: {
     type: String,
-    default: ""
+    default: "",
+    trim: true
   },
   phone: {
     type: Number,
@@ -13,15 +15,18 @@ const User = new Schema({
   },
   designation: {
     type: String,
-    default: ""
+    default: "",
+    trim: true
   },
   department: {
     type: String,
-    default: ""
+    default: "",
+    trim: true
   },
   location: {
     type: String,
-    default: ""
+    default: "",
+    trim: true
   },
   assignable: {
     type: Boolean,
@@ -29,8 +34,11 @@ const User = new Schema({
   },
   FCMToken: {
     type: String,
-    default: ""
+    default: "",
+    trim: true
   }
 });
+
+User.plugin(monoogsePaginate);
 
 module.exports = mongoose.model("User", User);

@@ -1,5 +1,4 @@
 const router = require("express").Router();
-const mongoose = require("../Models/config");
 const UserModel = require("../Models/User");
 const InspectionModel = require("../Models/InspectionModel");
 const { Locations } = require("../Constants/Location");
@@ -30,7 +29,7 @@ router.post("/user/new", (req, res) => {
 
 // Get a user using phone Number
 router.get("/user/:phone", (req, res) => {
-  UserModel.find({ phone: req.params.phone }, (err, docs) => {
+  UserModel.findOne({ phone: req.params.phone }, (err, docs) => {
     if (err) {
       res.status(404).send(err);
     } else {
@@ -41,7 +40,13 @@ router.get("/user/:phone", (req, res) => {
 
 // Get all Users
 router.get("/users", (req, res) => {
-  UserModel.find({}, (err, users) => {
+  const { page, perPage } = req.query;
+  const options = {
+    page: parseInt(page, 10) || 1,
+    limit: parseInt(perPage, 10) || 100
+  };
+
+  UserModel.paginate({}, options, (err, users) => {
     if (err) {
       res.send(err);
     } else {

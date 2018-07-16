@@ -5,10 +5,12 @@ const Schema = mongoose.Schema;
 const InspectionModel = Schema({
   assignees: [Schema.Types.ObjectId],
   mediaRef: {
-    type: String
+    type: String,
+    trim: true
   },
   reportID: {
-    type: String
+    type: String,
+    trim: true
   },
   Status: {
     type: String,
@@ -21,7 +23,8 @@ const InspectionModel = Schema({
     default: new Date().valueOf()
   },
   title: {
-    type: String
+    type: String,
+    trim: true
   },
   urgent: {
     type: Boolean
