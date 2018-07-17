@@ -245,12 +245,23 @@ router.get("/inspections/submittedBy/:userid", (req, res) => {
         _id: req.params.userid
       }
     },
-    (err, docs) => {
+    async (err, docs) => {
       if (err) {
         res.status(500).send(err);
       } else {
-        console.log(docs);
         res.status(200).send(docs);
+        let result = await Promise.all(docs.map(async d => {
+          let assignees = await Promise.all(d.assignees.map(async a => await UserModel.findById(a)));
+          let submittedBy = await UserModel.findById(d.submittedBy);
+
+          console.log(assignees);
+          return {
+            ...(d._doc),
+            assignees,
+            submittedBy
+          };
+        }));
+        res.status(200).send(result);
       }
     }
   );
@@ -260,12 +271,23 @@ router.get("/inspections/submittedBy/:userid", (req, res) => {
 router.get("/inspections/markedTo/:userid", (req, res) => {
   InspectionModel.find(
     { assignees: { $in: [req.params.userid] } },
-    (err, docs) => {
+    async (err, docs) => {
       if (err) {
         res.status(500).send(err);
       } else {
         console.log(docs);
-        res.status(200).send(docs);
+        let result = await Promise.all(docs.map(async d => {
+          let assignees = await Promise.all(d.assignees.map(async a => await UserModel.findById(a)));
+          let submittedBy = await UserModel.findById(d.submittedBy);
+
+          console.log(assignees);
+          return {
+            ...(d._doc),
+            assignees,
+            submittedBy
+          };
+        }));
+        res.status(200).send(result);
       }
     }
   );

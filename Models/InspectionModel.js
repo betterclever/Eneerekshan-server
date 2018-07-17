@@ -12,7 +12,7 @@ const InspectionModel = Schema({
     type: String,
     trim: true
   },
-  Status: {
+  status: {
     type: String,
     enum: ["seen", "unseen", "compiled", "markedCompiled"],
     default: "unseen"
